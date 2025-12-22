@@ -7,7 +7,7 @@ BASE_DIRECTORY = Path(__file__).parents[2]
 
 
 class DBSettings(BaseSettings):
-    name: str = "easypayments_site"
+    name: str = "easypayments"
     host: str = "localhost"
     port: int = 5432
     user: str = "postgres"
@@ -76,12 +76,12 @@ class AmoCRMSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    app: AppSettings = AppSettings()
-    uptrace: UptraceSettings = UptraceSettings()
-    db: DBSettings = DBSettings()
-    api: ApiSettings = ApiSettings()
-    jwt: JWTSettings = JWTSettings()
-    amocrm: AmoCRMSettings = AmoCRMSettings()
+    app: AppSettings
+    uptrace: UptraceSettings
+    db: DBSettings
+    api: ApiSettings
+    jwt: JWTSettings
+    amocrm: AmoCRMSettings
 
     model_config = SettingsConfigDict(
         env_file=".env",

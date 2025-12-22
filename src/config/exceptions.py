@@ -5,6 +5,8 @@ from fastapi import Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from src.common.exceptions import APIException
+
 # from api.permissions.exceptions import UserIsNotAdminError, UserIsNotAuthenticatedError
 # from application.exceptions import (
 #     CategoryAlreadyExists,
@@ -78,4 +80,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-handlers = {}
+handlers = {
+    APIException: api_exception_handler,
+}

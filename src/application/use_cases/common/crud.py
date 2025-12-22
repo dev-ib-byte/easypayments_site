@@ -8,10 +8,6 @@ from src.domain.validators.dto import PaginatedResponse
 from src.infrastructure.managers.paginator import Paginator
 from src.infrastructure.uow import UnitOfWork
 
-# ============================
-# GENERICS
-# ============================
-
 TRead = TypeVar("TRead", bound=BaseModel)
 TWrite = TypeVar("TWrite", bound=BaseModel)
 
@@ -50,7 +46,7 @@ class CRUDUseCase:
     ) -> TRead:
         async with self.uow(autocommit=True):
             repo = self.uow.get_model_repository(model_type)
-            obj = await repo.get(obj_id)
+            obj = await repo.get_by_id(obj_id)
 
         return read_dto.model_validate(obj)
 
@@ -62,14 +58,12 @@ class CRUDUseCase:
         read_dto: Type[TRead],
     ) -> TRead:
         async with self.uow():
+            entity_cls = self.uow.get_model_entity(model_type)
             repo = self.uow.get_model_repository(model_type)
-            obj = await repo.create(data.model_dump())
+            obj = await repo.create(entity_cls(**data.model_dump()))
 
         return read_dto.model_validate(obj)
 
-    # ============================
-    # UPDATE
-    # ============================
     async def update(
         self,
         *,
@@ -78,14 +72,17 @@ class CRUDUseCase:
         data: TWrite,
         read_dto: Type[TRead],
     ) -> TRead:
-        async with self.uow():
+        async with self.uow(autocommit=True):
             repo = self.uow.get_model_repository(model_type)
-            obj = await repo.update(
-                obj_id,
-                data.model_dump(exclude_unset=True),
-            )
 
-        return read_dto.model_validate(obj)
+            entity = await repo.get_by_id(obj_id)
+            update_data = data.model_dump(exclude_unset=True)
+            for field, value in update_data.items():
+                setattr(entity, field, value)
+
+            entity = await repo.update(entity)
+
+        return read_dto.model_validate(entity)
 
     async def delete(
         self,
@@ -95,4 +92,4 @@ class CRUDUseCase:
     ) -> None:
         async with self.uow():
             repo = self.uow.get_model_repository(model_type)
-            await repo.delete(obj_id)
+            await repo.delete_by_id(obj_id)

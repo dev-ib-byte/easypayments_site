@@ -44,9 +44,8 @@ class ModelRepository(Repository, Generic[TModel]):
     @abstractmethod
     async def get_list(
         self,
-        filters: dict[str, Any] | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
+        per_page: int | None = None,
+        page: int | None = None,
     ) -> list[TModel]:
         pass
 
@@ -55,7 +54,7 @@ class ModelRepository(Repository, Generic[TModel]):
         pass
 
     @abstractmethod
-    async def update(self, data: TModel) -> None:
+    async def update(self, data: TModel) -> TModel:
         pass
 
     @abstractmethod

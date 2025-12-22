@@ -18,9 +18,14 @@ class SqlAlchemyRepository(Repository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    def convert_to_model(self, entity: Any) -> Any:
+        pass
+
+    def convert_to_entity(self, model: Any) -> Any:
+        pass
+
 
 class SqlAlchemyModelRepository(SqlAlchemyRepository, ModelRepository[TModel]):
-    ENTITY: Type[Model]
     LIST_DTO: Type[BaseModel]
 
     ###############
@@ -51,7 +56,7 @@ class SqlAlchemyModelRepository(SqlAlchemyRepository, ModelRepository[TModel]):
         result = await self._session.scalars(stmt.order_by(getattr(self.MODEL, "id").desc()))
 
         objects = result.all()
-        return [self.LIST_DTO.model_validate(obj) for obj in objects]
+        return [self.convert_to_entity(obj) for obj in objects]
 
     async def get_list_models(self, **filters: Any) -> Result:
         stmt = select(self.MODEL).filter_by(**filters)
@@ -78,21 +83,21 @@ class SqlAlchemyModelRepository(SqlAlchemyRepository, ModelRepository[TModel]):
     ### Updators ###
     ################
 
-    async def update(self, data: TModel) -> None:
-        await self.bulk_update([data])
+    async def update(self, entity: TModel) -> TModel:
+        model = await self._session.get(self.MODEL, entity.id)
+        if not model:
+            raise ValueError("Object not found")
+
+        # обновляем только нужные поля
+        for field in self.MODEL.__table__.columns.keys():
+            if hasattr(entity, field):
+                setattr(model, field, getattr(entity, field))
+
+        await self._session.flush()
+        return self.convert_to_entity(model)
 
     async def bulk_update(self, entities: list[TModel]) -> None:
-        models = [self.convert_to_model(entity) for entity in entities]
-
-        for model in models:
-            data = {
-                col.name: getattr(model, col.name)
-                for col in self.MODEL.__table__.columns
-                if getattr(model, col.name) is not None
-            }
-
-            # Выполняем UPDATE по первичному ключу
-            await self._session.execute(update(self.MODEL).where(self.MODEL.id == model.id).values(**data))
+        pass
 
     ################
     ### Deleters ###

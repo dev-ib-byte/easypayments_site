@@ -5,7 +5,11 @@ from typing import AsyncGenerator
 from dependency_injector import containers, providers
 
 from src.application.use_cases.common.crud import CRUDUseCase
+from src.application.use_cases.forms.submit_form import SubmitFormUseCase
 from src.config.settings import Settings
+from src.infrastructure.managers.amocrm_client import AmoCRMClient
+from src.infrastructure.managers.recaptcha_client import RecaptchaClient
+from src.infrastructure.managers.unisender_client import UnisenderClient
 
 # from src.infrastructure.managers.jwt_manager import JWTManager
 from src.infrastructure.repositories.alchemy.db import Database
@@ -14,6 +18,21 @@ from src.infrastructure.uow import SqlAlchemyUnitOfWork, UnitOfWork
 
 class ClientsContainer(containers.DeclarativeContainer):
     settings = providers.Dependency(instance_of=Settings)
+
+    recaptcha_client = providers.Singleton(
+        RecaptchaClient,
+        settings=settings,
+    )
+
+    unisender_client = providers.Singleton(
+        UnisenderClient,
+        settings=settings,
+    )
+
+    amocrm_client = providers.Factory(
+        AmoCRMClient,
+        settings=settings,
+    )
 
 
 class DBContainer(containers.DeclarativeContainer):
@@ -44,6 +63,14 @@ class Container(containers.DeclarativeContainer):
     crud_use_case: providers.Provider[CRUDUseCase] = providers.Factory(
         CRUDUseCase,
         uow=db.container.uow,
+    )
+
+    submit_form_use_case = providers.Factory(
+        SubmitFormUseCase,
+        uow=db.uow,
+        recaptcha_client=clients.container.recaptcha_client,
+        unisender_client=clients.container.unisender_client,
+        amocrm_client=clients.container.amocrm_client,
     )
 
     @classmethod

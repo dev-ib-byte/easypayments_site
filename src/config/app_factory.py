@@ -68,6 +68,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     async with Container.lifespan(
         wireable_packages=[
             src.api,
+            src.api.public.comments,
+            src.api.admin.comments,
         ]
     ) as container:
         app.container = container  # type: ignore

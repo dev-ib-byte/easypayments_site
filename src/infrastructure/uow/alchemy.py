@@ -1,6 +1,13 @@
+from typing import Type
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from src.domain.entities.comment import Comment
+from src.domain.entities.entity import Entity
 from src.domain.entities.enums import ModelType
+from src.domain.entities.form_order import FormOrder
+from src.infrastructure.repositories.alchemy.comments import SqlAlchemyCommentsRepository
+from src.infrastructure.repositories.alchemy.form_orders import SqlAlchemyFormOrderRepository
 from src.infrastructure.repositories.interfaces.base import ModelRepository
 from src.infrastructure.uow.base import UnitOfWork
 
@@ -12,14 +19,26 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
     async def __aenter__(self) -> UnitOfWork:
         self._session = self._session_factory()
 
-        # self.users = SqlAlchemyUsersRepository(self._session)
+        self.comments = SqlAlchemyCommentsRepository(self._session)
+        self.forms = SqlAlchemyFormOrderRepository(self._session)
 
         return await super().__aenter__()
 
     def get_model_repository(self, model_name: ModelType) -> ModelRepository:
         match model_name:
-            case ModelType.USERS:
-                return self.users
+            case ModelType.COMMENTS:
+                return self.comments
+            case ModelType.FORM_ORDERS:
+                return self.comments
+            case _:
+                raise ValueError(f"Repository not found: {model_name}")
+
+    def get_model_entity(self, model_name: ModelType) -> Type[Entity]:
+        match model_name:
+            case ModelType.COMMENTS:
+                return Comment
+            case ModelType.FORM_ORDERS:
+                return FormOrder
             case _:
                 raise ValueError(f"Repository not found: {model_name}")
 

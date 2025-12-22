@@ -29,7 +29,7 @@ class FormOrder(Base):
     utm_medium: Mapped[str | None] = mapped_column(String(1500), nullable=True)
     utm_campaign: Mapped[str | None] = mapped_column(String(1500), nullable=True)
     utm_content: Mapped[str | None] = mapped_column(String(1500), nullable=True)
-    created: Mapped[datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now,
         server_default="now()",

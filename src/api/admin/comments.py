@@ -1,0 +1,83 @@
+from dependency_injector.wiring import Provide, inject
+from fastapi import Depends, Path, Query, Request
+from fastapi.routing import APIRouter
+from starlette import status
+
+from src.api.dto import CommentDTO, CreateCommentDTO, UpdateCommentDTO
+from src.application.use_cases.common.crud import CRUDUseCase
+from src.config.containers import Container
+from src.domain.entities.enums import ModelType
+from src.domain.validators.dto import PaginatedResponse
+
+router = APIRouter(tags=["Dashboard Comments"], prefix="/comments")
+
+
+@router.get("")
+@inject
+async def get_comments_list(
+    request: Request,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
+) -> PaginatedResponse[CommentDTO]:
+    return await crud_use_case.list(
+        request=request,
+        model_type=ModelType.COMMENTS,
+        read_dto=CommentDTO,
+        page_size=page_size,
+        page=page,
+    )
+
+
+@router.get("/{comment_id}", response_model=CommentDTO)
+@inject
+async def get_comment_by_id(
+    request: Request,
+    comment_id: int = Path(..., ge=1, description="Comment ID"),
+    crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
+) -> CommentDTO:
+    return await crud_use_case.retrieve(
+        model_type=ModelType.COMMENTS,
+        obj_id=comment_id,
+        read_dto=CommentDTO,
+    )
+
+
+@router.post("", response_model=CommentDTO, status_code=201)
+@inject
+async def create_comment(
+    data: CreateCommentDTO,
+    crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
+) -> CommentDTO:
+    return await crud_use_case.create(
+        model_type=ModelType.COMMENTS,
+        data=data,
+        read_dto=CommentDTO,
+    )
+
+
+@router.patch("/{comment_id}", response_model=CommentDTO)
+@inject
+async def update_comment(
+    comment_id: int = Path(..., ge=1),
+    data: UpdateCommentDTO = ...,
+    crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
+) -> CommentDTO:
+    return await crud_use_case.update(
+        model_type=ModelType.COMMENTS,
+        obj_id=comment_id,
+        data=data,
+        read_dto=CommentDTO,
+    )
+
+
+@router.delete("/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+async def delete_comment(
+    comment_id: int = Path(..., ge=1),
+    crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
+) -> None:
+    await crud_use_case.delete(
+        model_type=ModelType.COMMENTS,
+        obj_id=comment_id,
+    )

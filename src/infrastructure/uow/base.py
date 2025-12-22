@@ -2,9 +2,16 @@ from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Any, Type
 
+from src.domain.entities.entity import Entity
+from src.domain.entities.enums import ModelType
+from src.infrastructure.repositories.alchemy.comments import SqlAlchemyCommentsRepository
+from src.infrastructure.repositories.alchemy.form_orders import SqlAlchemyFormOrderRepository
+from src.infrastructure.repositories.interfaces.base import ModelRepository
+
 
 class UnitOfWork(ABC):
-    # users: UserRepository
+    comments: SqlAlchemyCommentsRepository
+    forms: SqlAlchemyFormOrderRepository
 
     def __call__(self, *args: Any, autocommit: bool = True, **kwargs: Any) -> "UnitOfWork":
         self._autocommit = autocommit
@@ -26,7 +33,11 @@ class UnitOfWork(ABC):
         await self.shutdown()
 
     @abstractmethod
-    def get_model_repository(self, model_name):
+    def get_model_repository(self, model_name) -> ModelRepository:
+        pass
+
+    @abstractmethod
+    def get_model_entity(self, model_name: ModelType) -> Type[Entity]:
         pass
 
     @abstractmethod

@@ -2,6 +2,5 @@ from enum import Enum
 
 
 class ModelType(Enum):
-    POSTS = "posts"
-    USERS = "users"
-    CATEGORIES = "categories"
+    COMMENTS = "comments"
+    FORM_ORDERS = "form_orders"

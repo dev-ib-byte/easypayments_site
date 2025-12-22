@@ -3,7 +3,7 @@ from typing import Any
 
 import requests
 
-from src.infrastructure.managers.base import ApiManager
+from src.config.settings import Settings
 
 
 class HttpMethod(StrEnum):
@@ -15,9 +15,10 @@ class HttpMethod(StrEnum):
 
 
 class HttpApiManager:
-    def __init__(self, base_url: str, access_token: str | None = None) -> None:
+    def __init__(self, base_url: str, settings: Settings) -> None:
+        self.settings = settings
         self.base_url = base_url.rstrip("/")
-        self.access_token = access_token
+        self.access_token = None
         self.timeout: int = 10
 
     def send_request(
