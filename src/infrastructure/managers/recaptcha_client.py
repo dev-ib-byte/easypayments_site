@@ -5,7 +5,7 @@ from src.infrastructure.managers.http_manager import HttpApiManager, HttpMethod
 class RecaptchaClient(HttpApiManager):
     def __init__(self, *, settings: Settings) -> None:
         super().__init__(
-            base_url="https://www.google.com",
+            base_url=settings.recaptcha.base_url,
             settings=settings,
         )
 
@@ -20,7 +20,7 @@ class RecaptchaClient(HttpApiManager):
 
         response = self.send_request(
             method=HttpMethod.POST,
-            endpoint="/recaptcha/api/siteverify",
+            endpoint="/siteverify",
             params=params,
         )
 

@@ -5,10 +5,14 @@ from src.config.settings import Settings
 
 class TelegramClient:
     def __init__(self, settings: Settings) -> None:
-        self.settings = settings
-        self.base_url = f"https://api.telegram.org/bot{settings.telegram.token}"
+        self._settings = settings
+        self.base_url = f"{self._settings.telegram.base_url}{settings.telegram.token}"
 
-    async def send_message(self, *, chat_id: int, text: str) -> None:
+    async def broadcast(self, text: str, chat_ids: list[str]) -> None:
+        for chat_id in chat_ids:
+            await self.send_message(chat_id, text)
+
+    async def send_message(self, chat_id: str, text: str) -> None:
         async with httpx.AsyncClient(timeout=10) as client:
             response = await client.post(
                 f"{self.base_url}/sendMessage",

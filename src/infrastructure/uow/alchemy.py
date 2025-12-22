@@ -50,3 +50,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
 
     async def shutdown(self) -> None:
         await self._session.close()
+
+    @property
+    def session(self):
+        return self._session

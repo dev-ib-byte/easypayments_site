@@ -69,3 +69,16 @@ class TelegramPush(Base):
     easypay_online: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     consult: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     buy_account: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+
+class LeadMagnit(Base):
+    __tablename__ = "leadmagnit"
+
+    email: Mapped[str] = mapped_column(String(200), nullable=False)
+
+
+class Newsletter(Base):
+    __tablename__ = "newsletter"
+
+    email: Mapped[str] = mapped_column(String(200), nullable=False)
+    form: Mapped[str] = mapped_column(String(200), nullable=False)

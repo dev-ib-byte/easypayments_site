@@ -87,3 +87,22 @@ class FormOrderDTO(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class LeadMagnitDTO(BaseModel):
+    email: str
+    utm_source: str | None = None
+    utm_medium: str | None = None
+    utm_campaign: str | None = None
+    utm_content: str | None = None
+    url_form: str | None = None
+
+
+class NewsletterDTO(BaseModel):
+    email: str
+    form: str | None = None
+    utm_source: str | None = None
+    utm_medium: str | None = None
+    utm_campaign: str | None = None
+    utm_content: str | None = None
+    url_form: str | None = None

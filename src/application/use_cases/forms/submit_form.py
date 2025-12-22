@@ -1,6 +1,8 @@
-import asyncio
+from __future__ import annotations
 
-from src.api.dto import FormSubmitDTO
+import asyncio
+from typing import TYPE_CHECKING
+
 from src.application.builders import build_contact_data, build_lead_data
 from src.application.constants import (
     forms_to_lists_mapper,
@@ -14,6 +16,9 @@ from src.infrastructure.managers.recaptcha_client import RecaptchaClient
 from src.infrastructure.managers.telegram_client import TelegramClient
 from src.infrastructure.managers.unisender_client import UnisenderClient
 from src.infrastructure.uow import UnitOfWork
+
+if TYPE_CHECKING:
+    from src.api.dto import FormSubmitDTO
 
 
 class SubmitFormUseCase:
@@ -77,10 +82,6 @@ class SubmitFormUseCase:
 
         return created
 
-    # ==========================
-    # helpers (из Django)
-    # ==========================
-
     def _normalize_counter(self, value) -> int:
         if value in (None, "", False):
             return 0
@@ -106,7 +107,6 @@ class SubmitFormUseCase:
         )
         if not ok:
             raise APIException(code=403, message="Invalid reCAPTCHA")
-
 
     async def _notify(self, entity: FormOrder) -> None:
         text = f"""

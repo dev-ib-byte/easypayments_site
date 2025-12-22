@@ -75,6 +75,16 @@ class AmoCRMSettings(BaseSettings):
     redirect_uri: str
 
 
+class ReCapchaSettings(BaseSettings):
+    base_url: str = "https://api.telegram.org/bot"
+    token: str = "secret"
+
+
+class TelegramSettings(BaseSettings):
+    base_url: str = "https://api.telegram.org/bot"
+    secret_key: str = "secret"
+
+
 class Settings(BaseSettings):
     app: AppSettings
     uptrace: UptraceSettings
@@ -82,6 +92,8 @@ class Settings(BaseSettings):
     api: ApiSettings
     jwt: JWTSettings
     amocrm: AmoCRMSettings
+    recaptcha: ReCapchaSettings
+    telegram: ReCapchaSettings
 
     model_config = SettingsConfigDict(
         env_file=".env",

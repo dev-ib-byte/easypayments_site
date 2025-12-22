@@ -1,5 +1,3 @@
-# src/infrastructure/clients/unisender_client.py
-
 from src.config.settings import Settings
 from src.infrastructure.managers.http_manager import HttpApiManager, HttpMethod
 
@@ -9,7 +7,6 @@ class UnisenderClient(HttpApiManager):
         super().__init__(
             base_url=settings.unisender.base_url,
             settings=settings,
-            access_token=settings.unisender.api_key,
         )
 
     def subscribe(self, *, email: str, list_id: int) -> None:

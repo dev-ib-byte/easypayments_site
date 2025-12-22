@@ -6,9 +6,13 @@ from dependency_injector import containers, providers
 
 from src.application.use_cases.common.crud import CRUDUseCase
 from src.application.use_cases.forms.submit_form import SubmitFormUseCase
+from src.application.use_cases.leads.submit_leadmagnit import LeadMagnitSubmitUseCase
+from src.application.use_cases.leads.submit_leadmagnit_company import LeadMagnitCompanySubmitUseCase
+from src.application.use_cases.leads.submit_newsletter import NewsletterSubmitUseCase
 from src.config.settings import Settings
 from src.infrastructure.managers.amocrm_client import AmoCRMClient
 from src.infrastructure.managers.recaptcha_client import RecaptchaClient
+from src.infrastructure.managers.telegram_client import TelegramClient
 from src.infrastructure.managers.unisender_client import UnisenderClient
 
 # from src.infrastructure.managers.jwt_manager import JWTManager
@@ -31,6 +35,11 @@ class ClientsContainer(containers.DeclarativeContainer):
 
     amocrm_client = providers.Factory(
         AmoCRMClient,
+        settings=settings,
+    )
+
+    telegram_client = providers.Factory(
+        TelegramClient,
         settings=settings,
     )
 
@@ -65,12 +74,34 @@ class Container(containers.DeclarativeContainer):
         uow=db.container.uow,
     )
 
-    submit_form_use_case = providers.Factory(
+    submit_form_use_case: providers.Provider[SubmitFormUseCase] = providers.Factory(
         SubmitFormUseCase,
         uow=db.uow,
         recaptcha_client=clients.container.recaptcha_client,
         unisender_client=clients.container.unisender_client,
         amocrm_client=clients.container.amocrm_client,
+        telegram_client=clients.container.telegram_client,
+    )
+
+    leadmagnit_submit_use_case = providers.Factory(
+        LeadMagnitSubmitUseCase,
+        uow=db.container.uow,
+        unisender=clients.unisender_client,
+        telegram=clients.telegram_client,
+    )
+
+    leadmagnit_company_submit_use_case = providers.Factory(
+        LeadMagnitCompanySubmitUseCase,
+        uow=db.container.uow,
+        unisender=clients.unisender_client,
+        telegram=clients.telegram_client,
+    )
+
+    newsletter_submit_use_case = providers.Factory(
+        NewsletterSubmitUseCase,
+        uow=db.container.uow,
+        unisender=clients.unisender_client,
+        telegram=clients.telegram_client,
     )
 
     @classmethod
