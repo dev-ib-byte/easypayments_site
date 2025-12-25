@@ -18,11 +18,26 @@ class CommentDTO(BaseModel):
         from_attributes = True
 
 
+class PublicCommentDTO(BaseModel):
+    name: str = Field(..., max_length=250)
+    comment: str
+    replay: int
+    active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class CreateCommentDTO(BaseModel):
     name: str = Field(..., max_length=250)
     email: EmailStr
     comment: str
     replay: int = 0
+
+
+class AdminCreateCommentDTO(CreateCommentDTO):
+    active: Optional[bool] = True
 
 
 class UpdateCommentDTO(BaseModel):
@@ -53,8 +68,8 @@ class FormSubmitDTO(BaseModel):
     utm_campaign: str | None = Field(default=None, max_length=1500)
     utm_content: str | None = Field(default=None, max_length=1500)
 
-    Google_id: int | None = None
-    Yandex_id: int | None = None
+    Google_id: str | None = None
+    Yandex_id: str | None = None
     recaptchaToken: str | None = None
 
 
@@ -80,8 +95,8 @@ class FormOrderDTO(BaseModel):
     utm_campaign: str | None
     utm_content: str | None
 
-    Google_id: int | None
-    Yandex_id: int | None
+    Google_id: int | None = None
+    Yandex_id: int | None = None
 
     created: datetime
 

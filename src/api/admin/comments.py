@@ -3,7 +3,8 @@ from fastapi import Depends, Path, Query, Request
 from fastapi.routing import APIRouter
 from starlette import status
 
-from src.api.dto import CommentDTO, CreateCommentDTO, UpdateCommentDTO
+from src.api.dto import AdminCreateCommentDTO, CommentDTO, UpdateCommentDTO
+from src.api.permissions.auth import requires_authentication
 from src.application.use_cases.common.crud import CRUDUseCase
 from src.config.containers import Container
 from src.domain.entities.enums import ModelType
@@ -13,6 +14,7 @@ router = APIRouter(tags=["Dashboard Comments"], prefix="/comments")
 
 
 @router.get("")
+# @requires_authentication(is_admin=True)
 @inject
 async def get_comments_list(
     request: Request,
@@ -30,6 +32,7 @@ async def get_comments_list(
 
 
 @router.get("/{comment_id}", response_model=CommentDTO)
+# @requires_authentication(is_admin=True)
 @inject
 async def get_comment_by_id(
     request: Request,
@@ -44,9 +47,11 @@ async def get_comment_by_id(
 
 
 @router.post("", response_model=CommentDTO, status_code=201)
+# @requires_authentication(is_admin=True)
 @inject
 async def create_comment(
-    data: CreateCommentDTO,
+    request: Request,
+    data: AdminCreateCommentDTO,
     crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
 ) -> CommentDTO:
     return await crud_use_case.create(
@@ -57,8 +62,10 @@ async def create_comment(
 
 
 @router.patch("/{comment_id}", response_model=CommentDTO)
+# @requires_authentication(is_admin=True)
 @inject
 async def update_comment(
+    request: Request,
     comment_id: int = Path(..., ge=1),
     data: UpdateCommentDTO = ...,
     crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
@@ -72,8 +79,10 @@ async def update_comment(
 
 
 @router.delete("/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+# @requires_authentication(is_admin=True)
 @inject
 async def delete_comment(
+    request: Request,
     comment_id: int = Path(..., ge=1),
     crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
 ) -> None:

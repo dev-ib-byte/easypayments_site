@@ -44,6 +44,8 @@ class ApiSettings(BaseModel):
     docs_endpoint: str = "/docs"
     openapi_endpoint: str = "/openapi.json"
 
+    auth_service_url: str = "http://localhost:8080/v1"
+
     @property
     def docs_url(self) -> str:
         return f"{self.docs_endpoint}"
@@ -73,16 +75,23 @@ class AmoCRMSettings(BaseSettings):
     client_id: str
     client_secret: str
     redirect_uri: str
+    refresh_token: str = "secret"
 
 
-class ReCapchaSettings(BaseSettings):
+class RecaptchaSettings(BaseSettings):
     base_url: str = "https://api.telegram.org/bot"
-    token: str = "secret"
+    secret_key: str = "secret"
 
 
 class TelegramSettings(BaseSettings):
     base_url: str = "https://api.telegram.org/bot"
-    secret_key: str = "secret"
+    token: str = "secret"
+
+
+class UnisenderSettings(BaseSettings):
+    base_url: str = "https://api.unisender.com/ru/api"
+    # api_key: str = "6dxu6z755jg7erbk45wszcn4q3wrotb67jsks1do"
+    api_key: str = "secret"
 
 
 class Settings(BaseSettings):
@@ -92,8 +101,9 @@ class Settings(BaseSettings):
     api: ApiSettings
     jwt: JWTSettings
     amocrm: AmoCRMSettings
-    recaptcha: ReCapchaSettings
-    telegram: ReCapchaSettings
+    recaptcha: RecaptchaSettings
+    telegram: TelegramSettings
+    unisender: UnisenderSettings
 
     model_config = SettingsConfigDict(
         env_file=".env",

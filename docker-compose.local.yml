@@ -6,24 +6,97 @@ services:
     build:
       context: .
     volumes:
-    - ./src:/app/src
-    - ./storage/media:/app/storage/media
-    - ./migrations:/app/migrations
+      - ./src:/app/src
+      - ./storage/media:/app/storage/media
+      - ./migrations:/app/migrations
+    environment:
 
-    env_file:
-      - ./.env
+      # =========================
+      # APP
+      # =========================
+      APP__TITLE: EasyPayments
+      APP__DEBUG: "true"
+      APP__VERSION: 0.1.0
+      APP__BASE_URL: http://localhost
+
+      # =========================
+      # DATABASE
+      # =========================
+      DB__NAME: easypayments_site
+      DB__HOST: db
+      DB__PORT: 5432
+      DB__USER: postgres
+      DB__PASSWORD: postgres
+      DB__DIALECT: postgresql+asyncpg
+      DB__POOL_SIZE: 2
+      DB__MAX_OVERFLOW: 4
+      DB__ECHO: "false"
+
+      # =========================
+      # API
+      # =========================
+      API__PREFIX: /api
+      API__ADMIN: /admin
+      API__PUBLIC: /public
+      API__DOCS_ENDPOINT: /docs
+      API__OPENAPI_ENDPOINT: /openapi.json
+
+      # =========================
+      # JWT
+      # =========================
+      JWT__SECRET_KEY: super-secret-key
+      JWT__ALGORITHM: HS256
+      JWT__ACCESS_TOKEN_EXPIRE_MINUTES: 600000
+      JWT__REFRESH_TOKEN_EXPIRE_DAYS: 600000
+
+      # =========================
+      # UPTRACE
+      # =========================
+      UPTRACE__ENABLED: "false"
+      UPTRACE__DSN: ""
+
+      # =========================
+      # AMO CRM
+      # =========================
+      AMOCRM__BASE_URL: https://infoeasypaymentsonline.amocrm.ru
+      AMOCRM__CLIENT_ID: 51103657-c003-4a82-b56a-314b6f399d8e
+      AMOCRM__CLIENT_SECRET: oKpH6uAB9LWOOlvuliST9cxTvWK67YVEtvPbmVeOpQiOqHvepp4lXIg1VihaNMJM
+      AMOCRM__REFRESH_TOKEN: def502003f02e78a46fb025dc125258997b763af37b39899aebcf849354bea55c4bf6fc2cf7baa5396d4f9c6900509d2478cc003fd1cf881a5625be5c86084fd19daaea1bf10f71fc07616c7c27746f0660cdd2db4927f32fdd63ed0e078305377ee14086131ac59606e18064fd50d3685922c81420132436c62948b72785b995342b1c1362948e5c7bc24820e0257568973b795cc8d89b026eb137cfe34e77440acd2741f6791ebf9cb05f10892d124ef15c1ccb552a69e74ea3fdf5658ff41f24d372b65132145bcf001d08425a3cd9dece552293d56673b3f961831e5d857740af55f1a66219b878c0e89d0c37fa0e53aa8cd0c3ccf98ae919834b6de8ba9c39353105be6d4d22ed3ce814cdad36b079a708b8b67568432605d21f7bb26f11c1f7f2ad55d4df862a2368c16926f42e6b98a5843808d31f54f1caa5a6bde99b5ffa8f18223614ab1e7a5e9274acc0c952a0cf87367ed02c0943ac1de17ed387840f11e9d2a61dbf397fea32ed051274d54d59a74ea01dfc6bbb8d929042f420061fe001613d7ce5c4ac3256fc13ea079e02b44bd97b92ad786fd867e69356cc519747e44e11b5bd1f0b3cec77ff69a7599e0ee55d183b9873262207ecf1ceb21fde81a47140b61294e7ee1d35e74d9cd7d37307e86
+      AMOCRM__REDIRECT_URI: http://localhost/oauth/amocrm/callback
+
+      # =========================
+      # RECAPTCHA
+      # =========================
+      RECAPTCHA__BASE_URL: https://www.google.com/recaptcha/api
+      RECAPTCHA__SECRET_KEY: 6LdptAgpAAAAACwStBSvZFgZF_t6v70qQmUzIdfq
+
+      # =========================
+      # TELEGRAM
+      # =========================
+      TELEGRAM__BASE_URL: https://api.telegram.org/bot
+      TELEGRAM__TOKEN: 8138744629:AAGU8FlbE5YwQpdNewCqjgdGHLQTIxQknmM
+
+      # =========================
+      # UNISENDER
+      # =========================
+      UNISENDER__BASE_URL: https://api.unisender.com/ru/api
+      UNISENDER__API_KEY: 6dxu6z755jg7erbk45wszcn4q3wrotb67jsks1do
+
+      WEB_PORT: 8000
+
     depends_on:
       - db
     networks:
       - test-local
-    command: bash -c "alembic upgrade head && uvicorn src.main:app"
-
+    command: >
+      bash -c "alembic upgrade head &&
+      uvicorn src.main:app --host 0.0.0.0 --port 8000"
 
   nginx:
     container_name: nginx-test-local
     image: nginx:latest
     ports:
-      - 80:80
+      - "80:80"
     depends_on:
       - web
     volumes:
@@ -35,17 +108,16 @@ services:
   db:
     container_name: db-test-local
     image: postgres:15-alpine
-    env_file:
-      - .env.db
-    expose:
-      - 5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: easypayments_site
     ports:
-      - 5432:5432
+      - "5433:5432"
     networks:
       - test-local
     volumes:
       - postgres-data-local:/var/lib/postgresql/data/
-
 
 volumes:
   postgres-data-local:

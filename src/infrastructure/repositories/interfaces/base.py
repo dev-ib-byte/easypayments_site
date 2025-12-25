@@ -3,9 +3,10 @@ from typing import Any, Generic, Type, TypeVar
 
 from sqlalchemy import Result
 
+from src.domain.entities.entity import Entity
 from src.domain.entities.model import Model
 
-TModel = TypeVar("TModel", bound=Model)
+TModel = TypeVar("TModel", bound=Entity)
 
 
 class Repository(ABC):

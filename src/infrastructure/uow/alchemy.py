@@ -29,7 +29,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
             case ModelType.COMMENTS:
                 return self.comments
             case ModelType.FORM_ORDERS:
-                return self.comments
+                return self.forms
             case _:
                 raise ValueError(f"Repository not found: {model_name}")
 

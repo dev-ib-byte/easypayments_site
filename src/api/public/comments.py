@@ -2,7 +2,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, Path, Query, Request
 from fastapi.routing import APIRouter
 
-from src.api.dto import CommentDTO, CreateCommentDTO
+from src.api.dto import CommentDTO, CreateCommentDTO, PublicCommentDTO
 from src.application.use_cases.common.crud import CRUDUseCase
 from src.config.containers import Container
 from src.domain.entities.enums import ModelType
@@ -18,27 +18,14 @@ async def get_comments_list(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
-) -> PaginatedResponse[CommentDTO]:
+) -> PaginatedResponse[PublicCommentDTO]:
     return await crud_use_case.list(
         request=request,
         model_type=ModelType.COMMENTS,
-        read_dto=CommentDTO,
+        read_dto=PublicCommentDTO,
         page_size=page_size,
         page=page,
-    )
-
-
-@router.get("/{comment_id}", response_model=CommentDTO)
-@inject
-async def get_comment_by_id(
-    request: Request,
-    comment_id: int = Path(..., ge=1, description="Comment ID"),
-    crud_use_case: CRUDUseCase = Depends(Provide[Container.crud_use_case]),
-) -> CommentDTO:
-    return await crud_use_case.retrieve(
-        model_type=ModelType.COMMENTS,
-        obj_id=comment_id,
-        read_dto=CommentDTO,
+        filters={"active": True},
     )
 
 

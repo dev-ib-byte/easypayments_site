@@ -9,19 +9,16 @@ class RecaptchaClient(HttpApiManager):
             settings=settings,
         )
 
-    def verify(self, *, token: str, remote_ip: str | None = None) -> bool:
-        params = {
+    async def verify(self, *, token: str, remote_ip: str | None = None) -> bool:
+        session = await self._get_session()
+
+        data = {
             "secret": self.settings.recaptcha.secret_key,
             "response": token,
         }
-
         if remote_ip:
-            params["remoteip"] = remote_ip
+            data["remoteip"] = remote_ip
 
-        response = self.send_request(
-            method=HttpMethod.POST,
-            endpoint="/siteverify",
-            params=params,
-        )
-
-        return bool(response.get("success"))
+        async with session.post(f"{self.base_url}/siteverify", data=data) as response:
+            payload = await response.json()
+            return bool(payload.get("success"))
