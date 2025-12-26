@@ -115,7 +115,6 @@ line_length = 108
 known_first_party = ["config", "infrastructure", "domain", "application", "api"]
 known_third_party = ["fastapi", "sqlalchemy", "pydantic", "dependency_injector"]
 
-# Порядок секций (без дубликатов)
 sections = [
     "FUTURE",
     "STDLIB",

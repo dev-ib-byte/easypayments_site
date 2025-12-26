@@ -48,6 +48,31 @@ class UpdateCommentDTO(BaseModel):
     active: Optional[bool] = None
 
 
+class TelegramPushDTO(BaseModel):
+    chat_id: str = Field(..., max_length=500)
+    send: bool = True
+    error: bool = False
+    easypay_online: bool = False
+    consult: bool = False
+    buy_account: bool = False
+
+    class Config:
+        from_attributes = True
+
+class CreateTelegramPushDTO(TelegramPushDTO):
+    pass
+
+
+class UpdateTelegramPushDTO(BaseModel):
+    chat_id: Optional[str] = Field(None, max_length=500)
+    send: Optional[bool] = None
+    error: Optional[bool] = None
+    easypay_online: Optional[bool] = None
+    consult: Optional[bool] = None
+    buy_account: Optional[bool] = None
+
+
+
 class FormSubmitDTO(BaseModel):
     form: str | None = Field(default=None, max_length=250)
     status: str | None = Field(default="new", max_length=250)

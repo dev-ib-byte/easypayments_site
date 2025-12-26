@@ -6,12 +6,14 @@ from src.domain.entities.entity import Entity
 from src.domain.entities.enums import ModelType
 from src.infrastructure.repositories.alchemy.comments import SqlAlchemyCommentsRepository
 from src.infrastructure.repositories.alchemy.form_orders import SqlAlchemyFormOrderRepository
+from src.infrastructure.repositories.alchemy.telegram_pushes import SqlAlchemyTelegramPushRepository
 from src.infrastructure.repositories.interfaces.base import ModelRepository
 
 
 class UnitOfWork(ABC):
     comments: SqlAlchemyCommentsRepository
     forms: SqlAlchemyFormOrderRepository
+    pushes: SqlAlchemyTelegramPushRepository
 
     def __call__(self, *args: Any, autocommit: bool = True, **kwargs: Any) -> "UnitOfWork":
         self._autocommit = autocommit

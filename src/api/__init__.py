@@ -1,7 +1,5 @@
 from src.api.admin.comments import router as admin_comment_router
-
-# from api.admin.posts import router as post_router
-# from api.admin.users import router as user_router
+from src.api.admin.telegram_pushes import router as telegram_pushes_router
 from src.api.public.comments import router as comment_router
 from src.api.public.forms import router as form_router
 from src.api.public.leads import router as lead_router
@@ -12,7 +10,8 @@ from src.api.public.leads import router as lead_router
 # from api.public.users import router as profile_router
 
 admin_routers = [
-    admin_comment_router
+    admin_comment_router,
+    telegram_pushes_router,
     # admin_comment_router, post_router, category_router
 ]
 

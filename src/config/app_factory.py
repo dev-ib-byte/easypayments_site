@@ -72,6 +72,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
             src.api.public.leads,
             src.api.public.forms,
             src.api.admin.comments,
+            src.api.admin.telegram_pushes,
         ]
     ) as container:
         app.container = container  # type: ignore

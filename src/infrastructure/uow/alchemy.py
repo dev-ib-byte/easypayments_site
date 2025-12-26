@@ -6,8 +6,10 @@ from src.domain.entities.comment import Comment
 from src.domain.entities.entity import Entity
 from src.domain.entities.enums import ModelType
 from src.domain.entities.form_order import FormOrder
+from src.domain.entities.telegram_push import TelegramPush
 from src.infrastructure.repositories.alchemy.comments import SqlAlchemyCommentsRepository
 from src.infrastructure.repositories.alchemy.form_orders import SqlAlchemyFormOrderRepository
+from src.infrastructure.repositories.alchemy.telegram_pushes import SqlAlchemyTelegramPushRepository
 from src.infrastructure.repositories.interfaces.base import ModelRepository
 from src.infrastructure.uow.base import UnitOfWork
 
@@ -21,6 +23,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
 
         self.comments = SqlAlchemyCommentsRepository(self._session)
         self.forms = SqlAlchemyFormOrderRepository(self._session)
+        self.pushes = SqlAlchemyTelegramPushRepository(self._session)
 
         return await super().__aenter__()
 
@@ -30,6 +33,8 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
                 return self.comments
             case ModelType.FORM_ORDERS:
                 return self.forms
+            case ModelType.TELEGRAM_PUSH_USERS:
+                return self.pushes
             case _:
                 raise ValueError(f"Repository not found: {model_name}")
 
@@ -39,6 +44,8 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
                 return Comment
             case ModelType.FORM_ORDERS:
                 return FormOrder
+            case ModelType.TELEGRAM_PUSH_USERS:
+                return TelegramPush
             case _:
                 raise ValueError(f"Repository not found: {model_name}")
 
