@@ -14,7 +14,7 @@ router = APIRouter(tags=["Dashboard Comments"], prefix="/comments")
 
 
 @router.get("")
-# @requires_authentication(is_admin=True)
+@requires_authentication(is_admin=True)
 @inject
 async def get_comments_list(
     request: Request,

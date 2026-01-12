@@ -24,8 +24,8 @@ class LeadMagnitCompanySubmitUseCase(LeadMagnitSubmitUseCase):
             )
             chat_ids = result.scalars().all()
 
-        self._unisender.subscribe(email=data.email, list_id=EP_REQ_LEAD_COMP)
-        self._unisender.subscribe(email=data.email, list_id=EP_REQ_ALL)
+        await self._unisender.subscribe(email=data.email, list_id=EP_REQ_LEAD_COMP)
+        await self._unisender.subscribe(email=data.email, list_id=EP_REQ_ALL)
 
         text = LEAD_MAGNIT_COMPANY.format(**self.lead_magnit_context(data))
 

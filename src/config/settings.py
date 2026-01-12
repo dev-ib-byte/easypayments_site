@@ -44,7 +44,7 @@ class ApiSettings(BaseModel):
     docs_endpoint: str = "/docs"
     openapi_endpoint: str = "/openapi.json"
 
-    auth_service_url: str = "http://localhost:8080/v1"
+    auth_service_url: str = "http://localhost:8080"
 
     @property
     def docs_url(self) -> str:

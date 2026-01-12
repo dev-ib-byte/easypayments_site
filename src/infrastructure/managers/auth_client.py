@@ -11,7 +11,7 @@ class AuthServiceClient:
     async def validate_access_token(self, token: str) -> AccessTokenResponseSchema:
         async with httpx.AsyncClient(timeout=5) as client:
             response = await client.post(
-                f"{self._base_url}/auth/validate-access-token",
+                f"{self._base_url}/v1/auth/validate-access-token",
                 json={"access_token": token},
             )
 
