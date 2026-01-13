@@ -13,8 +13,6 @@ from src.config.settings import Settings
 
 from .exceptions import handlers
 
-# from src.config.uptrace import config_uptrace
-
 
 def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(
@@ -27,7 +25,6 @@ def create_app(settings: Settings) -> FastAPI:
     )
 
     config_loggers()
-    # config_uptrace(app)
 
     add_middlewares(app, settings)
 

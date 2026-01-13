@@ -28,7 +28,7 @@ class AppSettings(BaseModel):
     debug: bool = False
     version: str = "0.1.0"
 
-    base_url: str = "http://localhost:8002"
+    base_url: str = "http://localhost:50058"
 
 
 class UptraceSettings(BaseModel):
@@ -63,13 +63,6 @@ class ApiSettings(BaseModel):
         return f"{self.prefix}{self.public}"
 
 
-class JWTSettings(BaseSettings):
-    secret_key: str = "secret"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 600000
-    refresh_token_expire_days: int = 600000
-
-
 class AmoCRMSettings(BaseSettings):
     base_url: str = "https://infoeasypaymentsonline.amocrm.ru"
     client_id: str
@@ -90,7 +83,6 @@ class TelegramSettings(BaseSettings):
 
 class UnisenderSettings(BaseSettings):
     base_url: str = "https://api.unisender.com/ru/api"
-    # api_key: str = "6dxu6z755jg7erbk45wszcn4q3wrotb67jsks1do"
     api_key: str = "secret"
 
 
@@ -99,7 +91,6 @@ class Settings(BaseSettings):
     uptrace: UptraceSettings
     db: DBSettings
     api: ApiSettings
-    jwt: JWTSettings
     amocrm: AmoCRMSettings
     recaptcha: RecaptchaSettings
     telegram: TelegramSettings

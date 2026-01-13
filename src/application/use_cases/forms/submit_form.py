@@ -53,13 +53,13 @@ class SubmitFormUseCase:
         if not payload.get("email"):
             raise APIException(code=400, message="Missing email")
 
-        # payload["Google_id"] = self._normalize_counter(payload.get("Google_id"))
-        # payload["Yandex_id"] = self._normalize_counter(payload.get("Yandex_id"))
+        payload["Google_id"] = self._normalize_counter(payload.get("Google_id"))
+        payload["Yandex_id"] = self._normalize_counter(payload.get("Yandex_id"))
 
-        # await self._validate_recaptcha(
-        #     token=payload.get("recaptchaToken"),
-        #     client_ip=client_ip,
-        # )
+        await self._validate_recaptcha(
+            token=payload.get("recaptchaToken"),
+            client_ip=client_ip,
+        )
 
         entity = FormOrder(
             form=payload.get("form"),
@@ -82,9 +82,9 @@ class SubmitFormUseCase:
             repo = self._uow.get_model_repository(ModelType.FORM_ORDERS)
             created = await repo.create(entity)
 
-        # await self._notify(created)
-        # await self._send_to_marketing(created)
-        # await self._send_to_crm(created)
+        await self._notify(created)
+        await self._send_to_marketing(created)
+        await self._send_to_crm(created)
 
         return FormOrderDTO.model_validate(created)
 

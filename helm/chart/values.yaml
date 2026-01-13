@@ -1,0 +1,15 @@
+nameOverride: easypayments-utils
+
+image:
+  repository: cr.selcloud.ru/ep-registry/easypayments-utils
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 50058

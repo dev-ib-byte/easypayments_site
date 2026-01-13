@@ -15,7 +15,6 @@ from src.infrastructure.managers.recaptcha_client import RecaptchaClient
 from src.infrastructure.managers.telegram_client import TelegramClient
 from src.infrastructure.managers.unisender_client import UnisenderClient
 
-# from src.infrastructure.managers.jwt_manager import JWTManager
 from src.infrastructure.repositories.alchemy.db import Database
 from src.infrastructure.uow import SqlAlchemyUnitOfWork, UnitOfWork
 
@@ -62,8 +61,6 @@ class Container(containers.DeclarativeContainer):
     db = providers.Container(DBContainer, settings=settings)
 
     clients = providers.Container(ClientsContainer, settings=settings)
-
-    # jwt_manager = providers.Singleton(JWTManager, settings=settings)
 
     ###################
     #### Use cases ####

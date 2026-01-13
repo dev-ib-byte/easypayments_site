@@ -42,6 +42,6 @@ WORKDIR /var/www/html
 RUN mkdir -p storage/media logs alembic/versions \
     && chmod +x init_db.sh
 
-EXPOSE 8000
+EXPOSE 50058
 
-CMD sh -c "./init_db.sh && exec uvicorn src.main:app --host 0.0.0.0 --port 8000"
+CMD sh -c "./init_db.sh && exec uvicorn src.main:app --host 0.0.0.0 --port 50058"

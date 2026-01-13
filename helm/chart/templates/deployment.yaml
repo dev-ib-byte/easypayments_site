@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nameOverride }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.nameOverride }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nameOverride }}
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: migrations-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.nameOverride }}-data
+        - name: tmp-copy
+          emptyDir: { }
+      initContainers:
+        - name: copy-migrations
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              # смонтировано уже в нужную папку
+              TARGET="/var/www/html/alembic/versions"
+              echo "Проверяем, пустой ли PVC:"
+              if [ -z "$(ls -A ${TARGET})" ]; then
+                echo "PVC пуст, копируем миграции из образа → ${TARGET}"
+                rsync -av --delete /var/www/html/alembic/versions/ "${TARGET}/"
+              else
+                echo "В PVC уже есть файлы, пропускаем копирование"
+              fi
+              echo "Итоговый список в ${TARGET}:"
+              ls -la "${TARGET}"
+          volumeMounts:
+            - name: migrations-volume
+              mountPath: /var/www/html/alembic/versions
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 50058
+          envFrom:
+            - secretRef:
+                name: {{ .Values.nameOverride }}-env
+          volumeMounts:
+            - name: migrations-volume
+              mountPath: /var/www/html/alembic/versions
