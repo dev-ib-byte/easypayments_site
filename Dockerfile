@@ -1,4 +1,3 @@
-# -------- BUILD STAGE --------
 FROM python:3.12-alpine AS build
 
 ENV PYTHONUNBUFFERED=1
@@ -26,7 +25,6 @@ RUN uv pip install --no-cache -r requirements.txt
 
 COPY . .
 
-# -------- RUNTIME STAGE --------
 FROM python:3.12-alpine
 
 ENV PYTHONUNBUFFERED=1

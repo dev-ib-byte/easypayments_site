@@ -1,5 +1,5 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import Depends, Path, Query, Request
+from fastapi import Depends, Query, Request
 from fastapi.routing import APIRouter
 
 from src.api.dto import CommentDTO, CreateCommentDTO, PublicCommentDTO
